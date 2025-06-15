@@ -7,7 +7,7 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       issues: write
@@ -22,29 +22,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ env.access_token }}
-      - name: Git config
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-      - name: Setup branches
-        run: |
-          # templateリポジトリの main,template/* ブランチの履歴をそのまま持ってくる
-          # 後続の選択必須課題で template/* ブランチを main にマージするとき不要なコンフリクトを避ける
-          git remote add template-repo https://github.com/${{ env.src_repo }}.git
-          git fetch --all
-          git merge --allow-unrelated-histories --no-edit "template-repo/main"
-          src=($(git branch -r | grep template-repo/template/ | sed "s/template-repo\///"))
-          dst=($(git branch -r | grep origin/template/ | sed "s/origin\///"))
-          for branch in "${src[@]}"; do
-            if [[ ! "${dst[@]}" =~ "${branch}" ]]; then
-              git checkout -b $branch
-              # workflows権限が無く.github/workflows以下に新規ファイルをpushできないため、既存のmainブランチに一旦マージする
-              git merge --no-edit "template-repo/${branch}"
-              git push origin $branch
-              git checkout main
-            fi
-          done
-          git remote rm template-repo
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -53,12 +30,3 @@ jobs:
         run: |
           gem install octokit -v '8.1.0'
           ruby .github/workflows/copy-issue.rb
-      - name: Cleanup
-        run: |
-          mv -f .github/README_TEMPLATE.md README.md 
-          rm -rf .github/workflows
-      - name: Commit & Push
-        run: |
-          git add .
-          git commit -m "Template Setup"
-          git push origin main
