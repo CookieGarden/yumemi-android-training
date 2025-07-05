@@ -1,4 +1,4 @@
-package com.example.ui
+package jp.co.yumemi.ui
 
 import org.junit.Test
 

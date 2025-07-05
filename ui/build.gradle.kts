@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.ui"
+    namespace = "jp.co.yumemi.ui"
     compileSdk = 33
 
     defaultConfig {

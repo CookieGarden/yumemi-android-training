@@ -1,4 +1,4 @@
-package com.example.ui
+package jp.co.yumemi.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

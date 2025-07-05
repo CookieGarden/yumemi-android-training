@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.model"
+    namespace = "jp.co.yumemi.model"
     compileSdk = 34
 
     defaultConfig {

@@ -1,4 +1,4 @@
-package com.example.model
+package jp.co.yumemi.model
 
 import org.junit.Test
 
