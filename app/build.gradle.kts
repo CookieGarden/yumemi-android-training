@@ -32,12 +32,6 @@ android {
     kotlinOptions {
         jvmTarget = JvmTarget.JVM_1_8.target
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
-    }
 }
 
 dependencies {
