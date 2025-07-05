@@ -1,4 +1,4 @@
-package jp.co.yumemi.droidtraining
+package jp.co.yumemi.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
