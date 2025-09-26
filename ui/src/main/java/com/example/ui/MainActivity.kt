@@ -16,10 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,24 +38,37 @@ class MainActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.sunny),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth(fraction = 0.5f)
-                            .aspectRatio(1f),
-                        colorFilter = ColorFilter.tint(color = Color.Red)
-                    )
-                    Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
-                        Text("text", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                        Text("text", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                    }
+                    WeatherInfo()
                     Spacer(modifier = Modifier.height(80.dp))
-                    Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
-                        Button(onClick = { /*TODO*/ }, modifier = Modifier.weight(1f)) { }
-                        Button(onClick = { /*TODO*/ }, modifier = Modifier.weight(1f)) { }
-                    }
+                    ActionButtons()
                 }
+            }
+        }
+    }
+
+    @Composable
+    private fun WeatherInfo(){
+        Image(
+            painter = painterResource(id = R.drawable.sunny),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth(fraction = 0.5f)
+                .aspectRatio(1f),
+            colorFilter = ColorFilter.tint(color = Color.Red)
+        )
+        Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
+            Text("text", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+            Text("text", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+        }
+    }
+    @Composable
+    private fun ActionButtons(){
+        Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
+            Button(onClick = { }, modifier = Modifier.weight(1f)) {
+                Text("RELOAD")
+            }
+            Button(onClick = { /*TODO*/ }, modifier = Modifier.weight(1f)) {
+                Text("NEXT")
             }
         }
     }
