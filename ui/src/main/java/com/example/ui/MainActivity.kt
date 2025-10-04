@@ -48,17 +48,19 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun WeatherInfo(){
-        Image(
-            painter = painterResource(id = R.drawable.sunny),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth(fraction = 0.5f)
-                .aspectRatio(1f),
-            colorFilter = ColorFilter.tint(color = Color.Red)
-        )
-        Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
-            Text("text", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-            Text("text", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+        Column {
+            Image(
+                painter = painterResource(id = R.drawable.sunny),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth(fraction = 0.5f)
+                    .aspectRatio(1f),
+                colorFilter = ColorFilter.tint(color = Color.Red)
+            )
+            Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
+                Text("text", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                Text("text", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+            }
         }
     }
     @Composable
