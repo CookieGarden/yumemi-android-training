@@ -25,12 +25,18 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import jp.co.yumemi.api.YumemiWeather
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             Scaffold { padding ->
+                var weather by remember { mutableStateOf<String?>(null) }
                 Column(
                     modifier = Modifier
                         .padding(padding)
@@ -38,16 +44,18 @@ class MainActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    WeatherInfo()
+                    WeatherInfo(weather = weather)
                     Spacer(modifier = Modifier.height(80.dp))
-                    ActionButtons()
+                    ActionButtons(onReload = {
+                        weather = YumemiWeather(this@MainActivity).fetchSimpleWeather()
+                    }, onNext = { /*TODO*/ })
                 }
             }
         }
     }
 
     @Composable
-    private fun WeatherInfo(){
+    private fun WeatherInfo(weather: String? = null){
         Column {
             Image(
                 painter = painterResource(id = R.drawable.sunny),
@@ -58,18 +66,18 @@ class MainActivity : ComponentActivity() {
                 colorFilter = ColorFilter.tint(color = Color.Red)
             )
             Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
-                Text("text", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                Text(weather.toString(), modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
                 Text("text", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
             }
         }
     }
     @Composable
-    private fun ActionButtons(){
+    private fun ActionButtons(onReload: () -> Unit, onNext: () -> Unit){
         Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
-            Button(onClick = { }, modifier = Modifier.weight(1f)) {
+            Button(onClick = { onReload() }, modifier = Modifier.weight(1f)) {
                 Text("RELOAD")
             }
-            Button(onClick = { /*TODO*/ }, modifier = Modifier.weight(1f)) {
+            Button(onClick = { onNext() }, modifier = Modifier.weight(1f)) {
                 Text("NEXT")
             }
         }
