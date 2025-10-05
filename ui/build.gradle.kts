@@ -43,6 +43,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.10.1") // Kotlinの拡張機能を含むAndroidXのコアライブラリ
     implementation("androidx.appcompat:appcompat:1.6.1") // 以前のAndroidバージョンとの互換性を提供するライブラリ
     implementation("com.google.android.material:material:1.9.0") // Material Designコンポーネント
+    implementation(project(path = ":api"))
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5") // AndroidXテスト用のJUnit拡張機能
