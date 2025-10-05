@@ -58,12 +58,28 @@ class MainActivity : ComponentActivity() {
     private fun WeatherInfo(weather: String? = null){
         Column {
             Image(
-                painter = painterResource(id = R.drawable.sunny),
+                painter = painterResource(
+                    id = when (weather) {
+                        "sunny" -> R.drawable.sunny
+                        "cloudy" -> R.drawable.cloudy
+                        "rainy" -> R.drawable.rainy
+                        "snow" -> R.drawable.snow
+                        else -> R.drawable.sunny
+                    }
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth(fraction = 0.5f)
                     .aspectRatio(1f),
-                colorFilter = ColorFilter.tint(color = Color.Red)
+                colorFilter = ColorFilter.tint(
+                    color = when (weather) {
+                        "sunny" -> Color.Red
+                        "cloudy" -> Color.Gray
+                        "rainy" -> Color.Blue
+                        "snow" -> Color.White
+                        else -> Color.Red
+                    }
+                )
             )
             Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
                 Text(weather.toString(), modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
