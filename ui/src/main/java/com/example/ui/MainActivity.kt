@@ -35,27 +35,35 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Scaffold { padding ->
-                var weather by remember { mutableStateOf<String?>(null) }
-                Column(
-                    modifier = Modifier
-                        .padding(padding)
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    WeatherInfo(weather = weather)
-                    Spacer(modifier = Modifier.height(80.dp))
-                    ActionButtons(onReload = {
+            WeatherTopScreen()
+        }
+    }
+
+    @Composable
+    fun WeatherTopScreen() {
+        Scaffold { padding ->
+            var weather by remember { mutableStateOf<String?>(null) }
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                WeatherInfo(weather = weather)
+                Spacer(modifier = Modifier.height(80.dp))
+                ActionButtons(
+                    onReload = {
                         weather = YumemiWeather(this@MainActivity).fetchSimpleWeather()
-                    }, onNext = { /*TODO*/ })
-                }
+                    },
+                    onNext = { /*TODO*/ }
+                )
             }
         }
     }
 
     @Composable
-    private fun WeatherInfo(weather: String? = null){
+    private fun WeatherInfo(weather: String?){
         Column {
             Image(
                 painter = painterResource(
@@ -67,7 +75,7 @@ class MainActivity : ComponentActivity() {
                         else -> R.drawable.sunny
                     }
                 ),
-                contentDescription = null,
+                contentDescription = "Weather Image",
                 modifier = Modifier
                     .fillMaxWidth(fraction = 0.5f)
                     .aspectRatio(1f),
@@ -82,8 +90,16 @@ class MainActivity : ComponentActivity() {
                 )
             )
             Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
-                Text(weather.toString(), modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                Text("text", modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                Text(
+                    text = weather?: "",
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "text",
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
