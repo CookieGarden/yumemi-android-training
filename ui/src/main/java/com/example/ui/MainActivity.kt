@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.style.TextOverflow
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,27 +91,29 @@ class MainActivity : ComponentActivity() {
                     }
                 )
             )
-            Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
-                Text(
-                    text = weather?: "",
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = "text",
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center
-                )
-            }
         }
     }
     @Composable
     private fun ActionButtons(onReload: () -> Unit, onNext: () -> Unit){
-        Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
-            Button(onClick = { onReload() }, modifier = Modifier.weight(1f)) {
-                Text("RELOAD")
+        Row(
+            modifier = Modifier.fillMaxWidth(fraction = 0.5f),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                onClick = { onReload() },
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(4.dp)
+            ) {
+                Text(
+                    text ="RELOAD",
+                    softWrap = false
+                )
             }
-            Button(onClick = { onNext() }, modifier = Modifier.weight(1f)) {
+            Button(
+                onClick = { onNext() },
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(4.dp)
+            ) {
                 Text("NEXT")
             }
         }
