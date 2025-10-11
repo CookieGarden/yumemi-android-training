@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -102,12 +103,10 @@ class MainActivity : ComponentActivity() {
             Button(
                 onClick = { onReload() },
                 modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(4.dp)
+                shape = RoundedCornerShape(4.dp),
+                contentPadding = PaddingValues(all = 8.dp)
             ) {
-                Text(
-                    text ="RELOAD",
-                    softWrap = false
-                )
+                Text(text ="RELOAD")
             }
             Button(
                 onClick = { onNext() },
