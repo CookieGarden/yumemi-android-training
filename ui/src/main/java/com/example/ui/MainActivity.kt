@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,6 +34,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextOverflow
+import com.example.ui.WeatherState
+import jp.co.yumemi.api.UnknownException
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +48,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun WeatherTopScreen() {
         Scaffold { padding ->
-            var weather by remember { mutableStateOf<String?>(null) }
+            var weatherState by remember { mutableStateOf<WeatherState>(WeatherState(null, false)) }
             Column(
                 modifier = Modifier
                     .padding(padding)
@@ -53,11 +56,18 @@ class MainActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                WeatherInfo(weather = weather)
+                WeatherInfo(weatherState = weatherState)
                 Spacer(modifier = Modifier.height(80.dp))
                 ActionButtons(
                     onReload = {
-                        weather = YumemiWeather(this@MainActivity).fetchSimpleWeather()
+                        weatherState = try {
+                            WeatherState(
+                                YumemiWeather(this@MainActivity).fetchThrowsWeather(),
+                                false
+                            )
+                        } catch (e: UnknownException) {
+                            WeatherState(null, true)
+                        }
                     },
                     onNext = { /*TODO*/ }
                 )
@@ -66,11 +76,11 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun WeatherInfo(weather: String?){
+    private fun WeatherInfo(weatherState: WeatherState) {
         Column {
             Image(
                 painter = painterResource(
-                    id = when (weather) {
+                    id = when (weatherState.weather) {
                         "sunny" -> R.drawable.sunny
                         "cloudy" -> R.drawable.cloudy
                         "rainy" -> R.drawable.rainy
@@ -83,7 +93,7 @@ class MainActivity : ComponentActivity() {
                     .fillMaxWidth(fraction = 0.5f)
                     .aspectRatio(1f),
                 colorFilter = ColorFilter.tint(
-                    color = when (weather) {
+                    color = when (weatherState.weather) {
                         "sunny" -> Color.Red
                         "cloudy" -> Color.Gray
                         "rainy" -> Color.Blue
@@ -94,8 +104,9 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
+
     @Composable
-    private fun ActionButtons(onReload: () -> Unit, onNext: () -> Unit){
+    private fun ActionButtons(onReload: () -> Unit, onNext: () -> Unit) {
         Row(
             modifier = Modifier.fillMaxWidth(fraction = 0.5f),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -106,7 +117,7 @@ class MainActivity : ComponentActivity() {
                 shape = RoundedCornerShape(4.dp),
                 contentPadding = PaddingValues(all = 8.dp)
             ) {
-                Text(text ="RELOAD")
+                Text(text = "RELOAD")
             }
             Button(
                 onClick = { onNext() },
