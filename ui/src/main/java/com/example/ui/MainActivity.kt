@@ -19,6 +19,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,10 +67,25 @@ class MainActivity : ComponentActivity() {
                                 false
                             )
                         } catch (e: UnknownException) {
-                            WeatherState(null, true)
+                            weatherState.copy(showErrorDialog = true)
                         }
                     },
                     onNext = { /*TODO*/ }
+                )
+            }
+            if(weatherState.showErrorDialog){
+                ErrorDialog(
+                    onDismiss = { weatherState = weatherState.copy(showErrorDialog = false) },
+                    onReload = {
+                        weatherState = try {
+                            WeatherState(
+                                YumemiWeather(this@MainActivity).fetchThrowsWeather(),
+                                false
+                            )
+                        } catch (e: UnknownException) {
+                            weatherState.copy(showErrorDialog = true)
+                        }
+                    }
                 )
             }
         }
@@ -127,5 +143,24 @@ class MainActivity : ComponentActivity() {
                 Text("NEXT")
             }
         }
+    }
+
+    @Composable
+    private fun ErrorDialog(onDismiss: () -> Unit, onReload: () -> Unit) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            title = { Text("Error") },
+            text = { Text("エラーが発生しました。") },
+            confirmButton = {
+                TextButton(onClick = { onReload() }) {
+                    Text("Reload")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onDismiss() }) {
+                    Text("Close")
+                }
+            },
+        )
     }
 }
