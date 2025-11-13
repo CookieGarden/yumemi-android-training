@@ -61,13 +61,14 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics") // UIのグラフィック描画機能
     implementation("androidx.compose.ui:ui-tooling-preview") // Android Studioでのプレビュー機能
     implementation("androidx.activity:activity-compose:1.7.2") // ComposeとActivityの統合
-
+    implementation("androidx.compose.ui:ui-tooling-preview") // Previewに必要
     // テストライブラリ
     androidTestImplementation("androidx.compose.ui:ui-test-junit4") // Compose UIのテスト用JUnitルール
 
     // デバッグ専用ライブラリ
     debugImplementation("androidx.compose.ui:ui-tooling") // 開発時のUIツール（Inspectorなど）
     debugImplementation("androidx.compose.ui:ui-test-manifest") // テストマニフェスト（通常は自動的に処理されます）
+    debugImplementation("androidx.compose.ui:ui-tooling") // AndroidStudioでプレビューを表示するため
 }
 
 
