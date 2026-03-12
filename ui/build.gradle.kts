@@ -68,6 +68,9 @@ dependencies {
     // デバッグ専用ライブラリ
     debugImplementation("androidx.compose.ui:ui-tooling") // 開発時のUIツール（Inspectorなど）
     debugImplementation("androidx.compose.ui:ui-test-manifest") // テストマニフェスト（通常は自動的に処理されます）
+
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose")
 }
 
 

@@ -35,7 +35,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ui.WeatherState
+import com.example.ui.WeatherTopViewModel
 import jp.co.yumemi.api.UnknownException
 
 class MainActivity : ComponentActivity() {
@@ -47,7 +49,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun WeatherTopScreen() {
+    fun WeatherTopScreen(viewModel: WeatherTopViewModel = viewModel()) {
         Scaffold { padding ->
             var weatherState by remember { mutableStateOf<WeatherState>(WeatherState(null, false)) }
             Column(
@@ -57,7 +59,7 @@ class MainActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                WeatherInfo(weatherState = weatherState)
+                WeatherInfo(weatherState = weatherState, viewModel = viewModel)
                 Spacer(modifier = Modifier.height(80.dp))
                 ActionButtons(
                     onReload = {
@@ -92,17 +94,11 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun WeatherInfo(weatherState: WeatherState) {
+    private fun WeatherInfo(weatherState: WeatherState, viewModel: WeatherTopViewModel = viewModel()) {
         Column {
             Image(
                 painter = painterResource(
-                    id = when (weatherState.weather) {
-                        "sunny" -> R.drawable.sunny
-                        "cloudy" -> R.drawable.cloudy
-                        "rainy" -> R.drawable.rainy
-                        "snow" -> R.drawable.snow
-                        else -> R.drawable.sunny
-                    }
+                    id = viewModel.convertToWeatherDrawable(weatherState)
                 ),
                 contentDescription = "Weather Image",
                 modifier = Modifier
