@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,6 +40,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ui.WeatherState
 import com.example.ui.WeatherTopViewModel
 import jp.co.yumemi.api.UnknownException
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,13 +58,16 @@ class MainActivity : ComponentActivity() {
             val weatherState = viewModel.weatherState
             Column(
                 modifier = Modifier
-                    .padding(padding)
+                    .padding(paddingValues = padding)
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                WeatherInfo(viewModel = viewModel)
-                Spacer(modifier = Modifier.height(80.dp))
+                WeatherInfo(
+                    weatherDrawableId = viewModel.fetchWeatherDrawableId(),
+                    weatherColor = viewModel.fetchWeatherColor()
+                )
+                Spacer(modifier = Modifier.height(height = 80.dp))
                 ActionButtons(
                     onReload = { viewModel.reloadWeather(context = this@MainActivity) },
                     onNext = { /*TODO*/ }
@@ -76,17 +83,15 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun WeatherInfo(viewModel: WeatherTopViewModel = viewModel()) {
+    private fun WeatherInfo(weatherDrawableId: Int, weatherColor: Color) {
         Column {
             Image(
-                painter = painterResource(
-                    id = viewModel.fetchWeatherDrawable()
-                ),
+                painter = painterResource(id = weatherDrawableId),
                 contentDescription = "Weather Image",
                 modifier = Modifier
                     .fillMaxWidth(fraction = 0.5f)
-                    .aspectRatio(1f),
-                colorFilter = ColorFilter.tint(color = viewModel.fetchWeatherColor())
+                    .aspectRatio(ratio = 1f),
+                colorFilter = ColorFilter.tint(color = weatherColor)
             )
         }
     }
@@ -95,22 +100,22 @@ class MainActivity : ComponentActivity() {
     private fun ActionButtons(onReload: () -> Unit, onNext: () -> Unit) {
         Row(
             modifier = Modifier.fillMaxWidth(fraction = 0.5f),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(space = 8.dp)
         ) {
             Button(
                 onClick = { onReload() },
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(4.dp),
+                modifier = Modifier.weight(weight = 1f),
+                shape = RoundedCornerShape(size = 4.dp),
                 contentPadding = PaddingValues(all = 8.dp)
             ) {
                 Text(text = "RELOAD")
             }
             Button(
                 onClick = { onNext() },
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(4.dp)
+                modifier = Modifier.weight(weight = 1f),
+                shape = RoundedCornerShape(size = 4.dp)
             ) {
-                Text("NEXT")
+                Text(text = "NEXT")
             }
         }
     }
@@ -119,18 +124,76 @@ class MainActivity : ComponentActivity() {
     private fun ErrorDialog(onDismiss: () -> Unit, onReload: () -> Unit) {
         AlertDialog(
             onDismissRequest = { onDismiss() },
-            title = { Text("Error") },
-            text = { Text("エラーが発生しました。") },
+            title = { Text(text = "Error") },
+            text = { Text(text = "エラーが発生しました。") },
             confirmButton = {
                 TextButton(onClick = { onReload() }) {
-                    Text("Reload")
+                    Text(text = "Reload")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismiss() }) {
-                    Text("Close")
+                    Text(text = "Close")
                 }
             },
         )
+    }
+
+    @Preview
+    @Composable
+    fun WeatherTopScreenPreview() {
+        WeatherTopScreen()
+    }
+
+    @Preview
+    @Composable
+    fun WeatherInfoSunnyPreview() {
+        MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
+            WeatherInfo(
+                weatherDrawableId = R.drawable.sunny,
+                weatherColor = Color.Red
+            )
+        }
+    }
+
+    @Preview
+    @Composable
+    fun WeatherInfoCloudyPreview() {
+        MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
+            WeatherInfo(
+                weatherDrawableId = R.drawable.cloudy,
+                weatherColor = Color.Gray
+            )
+        }
+    }
+
+    @Preview
+    @Composable
+    fun WeatherInfoRainyPreview() {
+        MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
+            WeatherInfo(
+                weatherDrawableId = R.drawable.rainy,
+                weatherColor = Color.Blue
+            )
+        }
+    }
+
+    @Preview
+    @Composable
+    fun WeatherInfoSnowPreview() {
+        MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
+            WeatherInfo(
+                weatherDrawableId = R.drawable.snow,
+                weatherColor = Color.White
+            )
+        }
+    }
+
+    @Preview
+    @Composable
+    fun ActionButtonsPreview() {
+        MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
+            ActionButtons(onReload = {}, onNext = {})
+        }
     }
 }

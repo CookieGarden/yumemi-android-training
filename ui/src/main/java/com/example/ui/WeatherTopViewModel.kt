@@ -44,7 +44,7 @@ class WeatherTopViewModel() : ViewModel() {
         }
     }
 
-    fun fetchWeatherDrawable(): Int {
+    fun fetchWeatherDrawableId(): Int {
         return when(weatherState.value.weather) {
             "sunny" -> R.drawable.sunny
             "cloudy" -> R.drawable.cloudy
