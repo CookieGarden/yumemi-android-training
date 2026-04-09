@@ -1,5 +1,6 @@
 package com.example.ui
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -29,10 +31,21 @@ class WeatherTopViewModel() : ViewModel() {
     // MainActivityで状態を更新している部分をここに移動する
     // MainActivityでこれらを参照する
 
-    // YumemiWeatherを叩いている部分をこっちに移動する
+    var weatherState = mutableStateOf<WeatherState>(WeatherState(null, false))
 
-    fun convertToWeatherDrawable(weatherState: WeatherState): Int {
-        return when(weatherState.weather) {
+    fun reloadWeather(context: Context): Unit {
+        try {
+            weatherState.value = WeatherState(
+                weather = YumemiWeather(context).fetchThrowsWeather(),
+                showErrorDialog = false
+            )
+        } catch (e: UnknownException) {
+            weatherState.value = WeatherState(null, true)
+        }
+    }
+
+    fun fetchWeatherDrawable(): Int {
+        return when(weatherState.value.weather) {
             "sunny" -> R.drawable.sunny
             "cloudy" -> R.drawable.cloudy
             "rainy" -> R.drawable.rainy
@@ -42,4 +55,13 @@ class WeatherTopViewModel() : ViewModel() {
     }
 
     // colorを出し分けている箇所もここに移動
+    fun fetchWeatherColor(): Color {
+        return when(weatherState.value.weather) {
+            "sunny" -> Color.Red
+            "cloudy" -> Color.Gray
+            "rainy" -> Color.Blue
+            "snow" -> Color.White
+            else -> Color.Red
+        }
+    }
 }
