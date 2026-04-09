@@ -36,7 +36,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ui.WeatherState
+import com.example.ui.WeatherTopViewModel
 import jp.co.yumemi.api.UnknownException
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -51,103 +53,69 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun WeatherTopScreen() {
-        MaterialTheme (colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
-            Scaffold { padding ->
-                var weatherState by remember { mutableStateOf<WeatherState>(WeatherState(null, false)) }
-                Column(
-                    modifier = Modifier
-                        .padding(padding)
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    WeatherInfo(
-                        weatherState = weatherState,
-                        modifier = Modifier.fillMaxWidth(fraction = 0.5f).aspectRatio(1f),)
-                    Spacer(modifier = Modifier.height(80.dp))
-                    ActionButtons(
-                        onReload = {
-                            weatherState = try {
-                                WeatherState(
-                                    YumemiWeather(this@MainActivity).fetchThrowsWeather(),
-                                    false
-                                )
-                            } catch (e: UnknownException) {
-                                weatherState.copy(showErrorDialog = true)
-                            }
-                        },
-                        onNext = { /*TODO*/ },
-                        modifier = Modifier.fillMaxWidth(fraction = 0.5f)
-                    )
-                }
-                if(weatherState.showErrorDialog){
-                    ErrorDialog(
-                        onDismiss = { weatherState = weatherState.copy(showErrorDialog = false) },
-                        onReload = {
-                            weatherState = try {
-                                WeatherState(
-                                    YumemiWeather(this@MainActivity).fetchThrowsWeather(),
-                                    false
-                                )
-                            } catch (e: UnknownException) {
-                                weatherState.copy(showErrorDialog = true)
-                            }
-                        }
-                    )
-                }
+    fun WeatherTopScreen(viewModel: WeatherTopViewModel = viewModel()) {
+        Scaffold { padding ->
+            val weatherState = viewModel.weatherState
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues = padding)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                WeatherInfo(
+                    weatherDrawableId = viewModel.fetchWeatherDrawableId(),
+                    weatherColor = viewModel.fetchWeatherColor()
+                )
+                Spacer(modifier = Modifier.height(height = 80.dp))
+                ActionButtons(
+                    onReload = { viewModel.reloadWeather(context = this@MainActivity) },
+                    onNext = { /*TODO*/ }
+                )
+            }
+            if(weatherState.value.showErrorDialog){
+                ErrorDialog(
+                    onDismiss = { weatherState.value = WeatherState(weather = weatherState.value.weather, showErrorDialog = false) },
+                    onReload = { viewModel.reloadWeather(context = this@MainActivity) }
+                )
             }
         }
     }
 
     @Composable
-    private fun WeatherInfo(weatherState: WeatherState, modifier: Modifier) {
+    private fun WeatherInfo(weatherDrawableId: Int, weatherColor: Color) {
         Column {
             Image(
-                painter = painterResource(
-                    id = when (weatherState.weather) {
-                        "sunny" -> R.drawable.sunny
-                        "cloudy" -> R.drawable.cloudy
-                        "rainy" -> R.drawable.rainy
-                        "snow" -> R.drawable.snow
-                        else -> R.drawable.sunny
-                    }
-                ),
+                painter = painterResource(id = weatherDrawableId),
                 contentDescription = "Weather Image",
-                modifier = modifier,
-                colorFilter = ColorFilter.tint(
-                    color = when (weatherState.weather) {
-                        "sunny" -> Color.Red
-                        "cloudy" -> Color.Gray
-                        "rainy" -> Color.Blue
-                        "snow" -> Color.White
-                        else -> Color.Red
-                    }
-                )
+                modifier = Modifier
+                    .fillMaxWidth(fraction = 0.5f)
+                    .aspectRatio(ratio = 1f),
+                colorFilter = ColorFilter.tint(color = weatherColor)
             )
         }
     }
 
     @Composable
-    private fun ActionButtons(onReload: () -> Unit, onNext: () -> Unit, modifier: Modifier) {
+    private fun ActionButtons(onReload: () -> Unit, onNext: () -> Unit) {
         Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.fillMaxWidth(fraction = 0.5f),
+            horizontalArrangement = Arrangement.spacedBy(space = 8.dp)
         ) {
             Button(
                 onClick = { onReload() },
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(4.dp),
+                modifier = Modifier.weight(weight = 1f),
+                shape = RoundedCornerShape(size = 4.dp),
                 contentPadding = PaddingValues(all = 8.dp)
             ) {
                 Text(text = "RELOAD")
             }
             Button(
                 onClick = { onNext() },
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(4.dp)
+                modifier = Modifier.weight(weight = 1f),
+                shape = RoundedCornerShape(size = 4.dp)
             ) {
-                Text("NEXT")
+                Text(text = "NEXT")
             }
         }
     }
@@ -156,16 +124,16 @@ class MainActivity : ComponentActivity() {
     private fun ErrorDialog(onDismiss: () -> Unit, onReload: () -> Unit) {
         AlertDialog(
             onDismissRequest = { onDismiss() },
-            title = { Text("Error") },
-            text = { Text("エラーが発生しました。") },
+            title = { Text(text = "Error") },
+            text = { Text(text = "エラーが発生しました。") },
             confirmButton = {
                 TextButton(onClick = { onReload() }) {
-                    Text("Reload")
+                    Text(text = "Reload")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { onDismiss() }) {
-                    Text("Close")
+                    Text(text = "Close")
                 }
             },
         )
@@ -181,7 +149,10 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun WeatherInfoSunnyPreview() {
         MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
-            WeatherInfo(weatherState = WeatherState(weather = "sunny", showErrorDialog = false), modifier = Modifier)
+            WeatherInfo(
+                weatherDrawableId = R.drawable.sunny,
+                weatherColor = Color.Red
+            )
         }
     }
 
@@ -189,7 +160,10 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun WeatherInfoCloudyPreview() {
         MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
-            WeatherInfo(weatherState = WeatherState(weather = "cloudy", showErrorDialog = false), modifier = Modifier)
+            WeatherInfo(
+                weatherDrawableId = R.drawable.cloudy,
+                weatherColor = Color.Gray
+            )
         }
     }
 
@@ -197,7 +171,10 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun WeatherInfoRainyPreview() {
         MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
-            WeatherInfo(weatherState = WeatherState(weather = "rainy", showErrorDialog = false), modifier = Modifier)
+            WeatherInfo(
+                weatherDrawableId = R.drawable.rainy,
+                weatherColor = Color.Blue
+            )
         }
     }
 
@@ -205,7 +182,10 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun WeatherInfoSnowPreview() {
         MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
-            WeatherInfo(weatherState = WeatherState(weather = "snow", showErrorDialog = false), modifier = Modifier)
+            WeatherInfo(
+                weatherDrawableId = R.drawable.snow,
+                weatherColor = Color.White
+            )
         }
     }
 
@@ -213,7 +193,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun ActionButtonsPreview() {
         MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
-            ActionButtons(onReload = {}, onNext = {}, modifier = Modifier)
+            ActionButtons(onReload = {}, onNext = {})
         }
     }
 }
