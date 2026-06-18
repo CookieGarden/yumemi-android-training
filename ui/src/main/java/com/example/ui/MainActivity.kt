@@ -22,62 +22,38 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import jp.co.yumemi.api.YumemiWeather
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.ui.WeatherState
-import com.example.ui.WeatherTopViewModel
-import jp.co.yumemi.api.UnknownException
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.ui.WeatherTopViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            WeatherTopScreen(viewModel = WeatherTopViewModel())
-        }
+        setContent { WeatherTopScreen(viewModel = WeatherTopViewModel()) }
     }
 
     @Composable
     fun WeatherTopScreen(viewModel: WeatherTopViewModel = viewModel()) {
-        // ここに監視する処理を書く(collect)
-        // collectでweatherStateの値の変化を感知
-        // 検知した値を使ってUIを更新する
-        // collectのブロックの中でweatherDrawableIdとかを再計算する&viewに反映させる
-
         val weatherState by viewModel.weatherStateFlow.collectAsState()
 
         Scaffold { padding ->
             Column(
-                modifier = Modifier
-                    .padding(paddingValues = padding)
-                    .fillMaxSize(),
+                modifier = Modifier.padding(paddingValues = padding)
+                                   .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 WeatherInfo(
-                    weatherDrawableId = viewModel.fetchWeatherDrawableId(weatherState.weather),
-                    weatherColor = viewModel.fetchWeatherColor(weatherState.weather)
+                    weatherDrawableId = viewModel.fetchWeatherDrawableId(weather = weatherState.weather),
+                    weatherColor = viewModel.fetchWeatherColor(weather = weatherState.weather)
                 )
                 Spacer(modifier = Modifier.height(height = 80.dp))
                 ActionButtons(
@@ -100,9 +76,8 @@ class MainActivity : ComponentActivity() {
             Image(
                 painter = painterResource(id = weatherDrawableId),
                 contentDescription = "Weather Image",
-                modifier = Modifier
-                    .fillMaxWidth(fraction = 0.5f)
-                    .aspectRatio(ratio = 1f),
+                modifier = Modifier.fillMaxWidth(fraction = 0.5f)
+                                   .aspectRatio(ratio = 1f),
                 colorFilter = ColorFilter.tint(color = weatherColor)
             )
         }
@@ -138,16 +113,8 @@ class MainActivity : ComponentActivity() {
             onDismissRequest = { onDismiss() },
             title = { Text(text = "Error") },
             text = { Text(text = "エラーが発生しました。") },
-            confirmButton = {
-                TextButton(onClick = { onReload() }) {
-                    Text(text = "Reload")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { onDismiss() }) {
-                    Text(text = "Close")
-                }
-            },
+            confirmButton = { TextButton(onClick = { onReload() }) { Text(text = "Reload") } },
+            dismissButton = { TextButton(onClick = { onDismiss() }) { Text(text = "Close") } },
         )
     }
 
