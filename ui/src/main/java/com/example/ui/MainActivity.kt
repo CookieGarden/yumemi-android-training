@@ -22,6 +22,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,19 +45,29 @@ import jp.co.yumemi.api.UnknownException
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WeatherTopScreen()
+            WeatherTopScreen(viewModel = WeatherTopViewModel())
         }
     }
 
     @Composable
     fun WeatherTopScreen(viewModel: WeatherTopViewModel = viewModel()) {
+        // ここに監視する処理を書く(collect)
+        // collectでweatherStateの値の変化を感知
+        // 検知した値を使ってUIを更新する
+        // collectのブロックの中でweatherDrawableIdとかを再計算する&viewに反映させる
+
+        val weatherState by viewModel.weatherStateFlow.collectAsState()
+
         Scaffold { padding ->
-            val weatherState = viewModel.weatherState
             Column(
                 modifier = Modifier
                     .padding(paddingValues = padding)
@@ -64,8 +76,8 @@ class MainActivity : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 WeatherInfo(
-                    weatherDrawableId = viewModel.fetchWeatherDrawableId(),
-                    weatherColor = viewModel.fetchWeatherColor()
+                    weatherDrawableId = viewModel.fetchWeatherDrawableId(weatherState.weather),
+                    weatherColor = viewModel.fetchWeatherColor(weatherState.weather)
                 )
                 Spacer(modifier = Modifier.height(height = 80.dp))
                 ActionButtons(
@@ -73,9 +85,9 @@ class MainActivity : ComponentActivity() {
                     onNext = { /*TODO*/ }
                 )
             }
-            if(weatherState.value.showErrorDialog){
+            if(weatherState.showErrorDialog){
                 ErrorDialog(
-                    onDismiss = { weatherState.value = WeatherState(weather = weatherState.value.weather, showErrorDialog = false) },
+                    onDismiss = { viewModel.dismissErrorDialog() },
                     onReload = { viewModel.reloadWeather(context = this@MainActivity) }
                 )
             }
