@@ -72,6 +72,9 @@ dependencies {
 
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose")
+
+    // Flow
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
 }
 
 
