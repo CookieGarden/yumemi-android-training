@@ -37,7 +37,7 @@ import com.example.ui.WeatherTopViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { WeatherTopScreen(viewModel = WeatherTopViewModel()) }
+        setContent { WeatherTopScreen() }
     }
 
     @Composable

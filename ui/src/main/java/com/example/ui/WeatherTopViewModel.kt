@@ -12,21 +12,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class WeatherTopViewModel() : ViewModel() {
-    // MutableStateFlow: 内だけで更新したい(setter)
-    private var weatherMutableStateFlow = MutableStateFlow<WeatherState>(value = WeatherState(weather = null, showErrorDialog = false))
-
-    // StateFlow: 外部で参照したい(getter)
-    val weatherStateFlow: StateFlow<WeatherState> = weatherMutableStateFlow.asStateFlow()
+    private val _weatherMutableStateFlow = MutableStateFlow<WeatherState>(value = WeatherState(weather = null, showErrorDialog = false))
+    val weatherStateFlow: StateFlow<WeatherState> = _weatherMutableStateFlow.asStateFlow()
 
     fun reloadWeather(context: Context): Unit {
         try {
             val weather = YumemiWeather(context).fetchThrowsWeather()
-            weatherMutableStateFlow.update {
+            _weatherMutableStateFlow.update {
                 it.copy(weather = weather, showErrorDialog = false)
             }
 
         } catch (e: UnknownException) {
-            weatherMutableStateFlow.update {
+            _weatherMutableStateFlow.update {
                 it.copy(showErrorDialog = true)
             }
         }
@@ -53,6 +50,6 @@ class WeatherTopViewModel() : ViewModel() {
     }
 
     fun dismissErrorDialog(): Unit {
-        weatherMutableStateFlow.update { it.copy(showErrorDialog = false) }
+        _weatherMutableStateFlow.update { it.copy(showErrorDialog = false) }
     }
 }
