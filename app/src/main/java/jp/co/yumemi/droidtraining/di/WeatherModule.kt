@@ -11,12 +11,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object WeatherModule{
+object WeatherModule {
     @Provides
     @Singleton
     fun provideYumemiWeather(@ApplicationContext context: Context): YumemiWeather {
         return YumemiWeather(context)
     }
 }
-
-
