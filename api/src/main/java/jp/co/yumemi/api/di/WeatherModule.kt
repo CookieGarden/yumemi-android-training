@@ -1,4 +1,4 @@
-package jp.co.yumemi.droidtraining.di
+package jp.co.yumemi.api.di
 
 import android.content.Context
 import dagger.Module
