@@ -2,14 +2,17 @@ package com.example.ui
 
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jp.co.yumemi.api.UnknownException
 import jp.co.yumemi.api.YumemiWeather
 import jp.co.yumemi.ui.R
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,15 +24,13 @@ class WeatherTopViewModel @Inject constructor(
     val weatherStateFlow: StateFlow<WeatherState> = _weatherMutableStateFlow.asStateFlow()
 
     fun reloadWeather(): Unit {
-        try {
-            val weather = yumemiWeather.fetchThrowsWeather()
-            _weatherMutableStateFlow.update {
-                it.copy(weather = weather, showErrorDialog = false)
-            }
-
-        } catch (e: UnknownException) {
-            _weatherMutableStateFlow.update {
-                it.copy(showErrorDialog = true)
+        viewModelScope.launch(context = Dispatchers.IO) {
+            _weatherMutableStateFlow.update { it.copy(showErrorDialog = false) }
+            try {
+                val weather = yumemiWeather.fetchWeatherAsync()
+                _weatherMutableStateFlow.update { it.copy(weather = weather) }
+            } catch (e: UnknownException) {
+                _weatherMutableStateFlow.update { it.copy(showErrorDialog = true) }
             }
         }
     }
