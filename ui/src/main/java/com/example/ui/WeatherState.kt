@@ -1,6 +1,7 @@
 package com.example.ui
 
 data class WeatherState(
-    val weather: String?, // もっと適切な表現方法があります！
+    val weather: String?,
     val showErrorDialog: Boolean,
+    val isLoading: Boolean = false,
 )
