@@ -17,3 +17,4 @@ rootProject.name = "android-traning-template"
 include(":app")
 include(":api")
 include(":ui")
+include(":model")
