@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "jp.co.yumemi.model"
-    compileSdk = 34
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 27
