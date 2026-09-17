@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,10 +25,10 @@ class WeatherTopViewModel @Inject constructor(
     val weatherStateFlow: StateFlow<WeatherState> = _weatherMutableStateFlow.asStateFlow()
 
     fun reloadWeather() {
-        viewModelScope.launch(context = Dispatchers.IO) {
+        viewModelScope.launch {
             _weatherMutableStateFlow.update { it.copy(showErrorDialog = false, isLoading = true) }
             try {
-                val weather = yumemiWeather.fetchWeatherAsync()
+                val weather = withContext(Dispatchers.IO) { yumemiWeather.fetchWeatherAsync() }
                 _weatherMutableStateFlow.update { it.copy(weather = weather) }
             } catch (_: UnknownException) {
                 _weatherMutableStateFlow.update { it.copy(showErrorDialog = true) }
