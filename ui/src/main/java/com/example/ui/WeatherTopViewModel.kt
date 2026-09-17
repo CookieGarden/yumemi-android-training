@@ -25,10 +25,10 @@ class WeatherTopViewModel @Inject constructor(
     val weatherStateFlow: StateFlow<WeatherState> = _weatherMutableStateFlow.asStateFlow()
 
     fun reloadWeather() {
-        viewModelScope.launch {
+        viewModelScope.launch(context = Dispatchers.IO) {
             _weatherMutableStateFlow.update { it.copy(showErrorDialog = false, isLoading = true) }
             try {
-                val weather = withContext(Dispatchers.IO) { yumemiWeather.fetchWeatherAsync() }
+                val weather = yumemiWeather.fetchWeatherAsync()
                 _weatherMutableStateFlow.update { it.copy(weather = weather) }
             } catch (_: UnknownException) {
                 _weatherMutableStateFlow.update { it.copy(showErrorDialog = true) }
