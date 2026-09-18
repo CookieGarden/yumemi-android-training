@@ -3,7 +3,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,9 +16,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,21 +52,28 @@ class MainActivity : ComponentActivity() {
         val weatherState by viewModel.weatherStateFlow.collectAsState()
 
         Scaffold { padding ->
-            Column(
+            Box(
                 modifier = Modifier.padding(paddingValues = padding)
-                                   .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                                   .fillMaxSize()
             ) {
-                WeatherInfo(
-                    weatherDrawableId = viewModel.fetchWeatherDrawableId(weather = weatherState.weather),
-                    weatherColor = viewModel.fetchWeatherColor(weather = weatherState.weather)
-                )
-                Spacer(modifier = Modifier.height(height = 80.dp))
-                ActionButtons(
-                    onReload = { viewModel.reloadWeather() },
-                    onNext = { /*TODO*/ }
-                )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    WeatherInfo(
+                        weatherDrawableId = viewModel.fetchWeatherDrawableId(weather = weatherState.weather),
+                        weatherColor = viewModel.fetchWeatherColor(weather = weatherState.weather)
+                    )
+                    Spacer(modifier = Modifier.height(height = 80.dp))
+                    ActionButtons(
+                        onReload = { viewModel.reloadWeather() },
+                        onNext = { /*TODO*/ }
+                    )
+                }
+                if(weatherState.isLoading){
+                    LoadingIndicator(modifier = Modifier.matchParentSize())
+                }
             }
             if(weatherState.showErrorDialog){
                 ErrorDialog(
@@ -105,6 +118,17 @@ class MainActivity : ComponentActivity() {
             ) {
                 Text(text = "NEXT")
             }
+        }
+    }
+
+    @Composable
+    private fun LoadingIndicator(modifier: Modifier = Modifier) {
+        Box(
+            modifier = modifier.background(color = MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
+                               .pointerInput(key1 = Unit) { detectTapGestures { } },
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(modifier = Modifier.size(size = 80.dp))
         }
     }
 
@@ -166,6 +190,14 @@ class MainActivity : ComponentActivity() {
                 weatherDrawableId = R.drawable.snow,
                 weatherColor = Color.White
             )
+        }
+    }
+
+    @Preview
+    @Composable
+    fun LoadingIndicatorPreview() {
+        MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
+            LoadingIndicator(modifier = Modifier.fillMaxSize())
         }
     }
 
