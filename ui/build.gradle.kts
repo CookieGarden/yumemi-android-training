@@ -47,6 +47,7 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0") // Material Designコンポーネント
     implementation(project(path = ":api"))
     implementation(project(path = ":model"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5") // AndroidXテスト用のJUnit拡張機能

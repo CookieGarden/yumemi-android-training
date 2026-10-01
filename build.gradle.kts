@@ -5,6 +5,7 @@ plugins {
 
     val kotlin = "1.9.10"
     kotlin("android") version kotlin apply false
+    kotlin("plugin.serialization") version kotlin apply false
 
     val ksp = "1.9.10-1.0.13"
     id("com.google.devtools.ksp") version ksp apply false

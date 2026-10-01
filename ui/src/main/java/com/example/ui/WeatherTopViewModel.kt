@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jp.co.yumemi.api.UnknownException
 import jp.co.yumemi.api.YumemiWeather
+import jp.co.yumemi.model.WeatherRequest
+import jp.co.yumemi.model.WeatherResponse
 import jp.co.yumemi.ui.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +15,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -59,5 +65,14 @@ class WeatherTopViewModel @Inject constructor(
 
     fun dismissErrorDialog() {
         _weatherMutableStateFlow.update { it.copy(showErrorDialog = false) }
+    }
+
+    private fun createWeatherRequestJson(area: String): String {
+        val date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+        return Json.encodeToString(WeatherRequest(area = area, date = date))
+    }
+
+    private fun decodeWeatherResponse(json: String): WeatherResponse {
+        return Json.decodeFromString<WeatherResponse>(json)
     }
 }

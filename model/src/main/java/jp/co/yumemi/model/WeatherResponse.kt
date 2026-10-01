@@ -1,5 +1,8 @@
 package jp.co.yumemi.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class WeatherResponse(
     val weather: String,
     val maxTemp: Int,
