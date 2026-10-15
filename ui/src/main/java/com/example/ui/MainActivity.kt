@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -61,9 +62,13 @@ class MainActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    val weather = weatherState.weather
                     WeatherInfo(
-                        weatherDrawableId = viewModel.fetchWeatherDrawableId(weather = weatherState.weather),
-                        weatherColor = viewModel.fetchWeatherColor(weather = weatherState.weather)
+                        weatherDrawableId = viewModel.fetchWeatherDrawableId(weather = weather?.weather),
+                        weatherColor = viewModel.fetchWeatherColor(weather = weather?.weather),
+                        area = weather?.area,
+                        minTemp = weather?.minTemp,
+                        maxTemp = weather?.maxTemp
                     )
                     Spacer(modifier = Modifier.height(height = 80.dp))
                     ActionButtons(
@@ -85,8 +90,15 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun WeatherInfo(weatherDrawableId: Int, weatherColor: Color) {
-        Column {
+    private fun WeatherInfo(
+        weatherDrawableId: Int,
+        weatherColor: Color,
+        area: String?,
+        minTemp: Int?,
+        maxTemp: Int?,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = area ?: "--")
             Image(
                 painter = painterResource(id = weatherDrawableId),
                 contentDescription = "Weather Image",
@@ -94,6 +106,20 @@ class MainActivity : ComponentActivity() {
                                    .aspectRatio(ratio = 1f),
                 colorFilter = ColorFilter.tint(color = weatherColor)
             )
+            Row(modifier = Modifier.fillMaxWidth(fraction = 0.5f)) {
+                Text(
+                    text = minTemp?.let { "$it℃" } ?: "--",
+                    color = Color.Blue,
+                    modifier = Modifier.weight(weight = 1f),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = maxTemp?.let { "$it℃" } ?: "--",
+                    color = Color.Red,
+                    modifier = Modifier.weight(weight = 1f),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 
@@ -149,48 +175,41 @@ class MainActivity : ComponentActivity() {
         WeatherTopScreen()
     }
 
+    @Composable
+    private fun WeatherInfoPreview(weatherDrawableId: Int, weatherColor: Color) {
+        MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = weatherColor)) {
+            WeatherInfo(
+                weatherDrawableId = weatherDrawableId,
+                weatherColor = weatherColor,
+                area = "東京",
+                minTemp = 10,
+                maxTemp = 25
+            )
+        }
+    }
+
     @Preview
     @Composable
     fun WeatherInfoSunnyPreview() {
-        MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
-            WeatherInfo(
-                weatherDrawableId = R.drawable.sunny,
-                weatherColor = Color.Red
-            )
-        }
+        WeatherInfoPreview(weatherDrawableId = R.drawable.sunny, weatherColor = Color.Red)
     }
 
     @Preview
     @Composable
     fun WeatherInfoCloudyPreview() {
-        MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
-            WeatherInfo(
-                weatherDrawableId = R.drawable.cloudy,
-                weatherColor = Color.Gray
-            )
-        }
+        WeatherInfoPreview(weatherDrawableId = R.drawable.cloudy, weatherColor = Color.Gray)
     }
 
     @Preview
     @Composable
     fun WeatherInfoRainyPreview() {
-        MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
-            WeatherInfo(
-                weatherDrawableId = R.drawable.rainy,
-                weatherColor = Color.Blue
-            )
-        }
+        WeatherInfoPreview(weatherDrawableId = R.drawable.rainy, weatherColor = Color.Blue)
     }
 
     @Preview
     @Composable
     fun WeatherInfoSnowPreview() {
-        MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = Color.Red)) {
-            WeatherInfo(
-                weatherDrawableId = R.drawable.snow,
-                weatherColor = Color.White
-            )
-        }
+        WeatherInfoPreview(weatherDrawableId = R.drawable.snow, weatherColor = Color.White)
     }
 
     @Preview
