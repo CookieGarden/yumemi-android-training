@@ -62,8 +62,8 @@ class MainActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     WeatherInfo(
-                        weatherDrawableId = viewModel.fetchWeatherDrawableId(weather = weatherState.weather),
-                        weatherColor = viewModel.fetchWeatherColor(weather = weatherState.weather)
+                        weatherDrawableId = viewModel.fetchWeatherDrawableId(weather = weatherState.weather?.weather),
+                        weatherColor = viewModel.fetchWeatherColor(weather = weatherState.weather?.weather)
                     )
                     Spacer(modifier = Modifier.height(height = 80.dp))
                     ActionButtons(

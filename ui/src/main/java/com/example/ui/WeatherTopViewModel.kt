@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.time.LocalDateTime
@@ -34,8 +33,10 @@ class WeatherTopViewModel @Inject constructor(
         viewModelScope.launch(context = Dispatchers.IO) {
             _weatherMutableStateFlow.update { it.copy(showErrorDialog = false, isLoading = true) }
             try {
-                val weather = yumemiWeather.fetchWeatherAsync()
-                _weatherMutableStateFlow.update { it.copy(weather = weather) }
+                val requestJson = createWeatherRequestJson()
+                val responseJson = yumemiWeather.fetchJsonWeatherAsync(requestJson)
+                val response = decodeWeatherResponse(responseJson)
+                _weatherMutableStateFlow.update { it.copy(weather = response) }
             } catch (_: UnknownException) {
                 _weatherMutableStateFlow.update { it.copy(showErrorDialog = true) }
             } finally {
@@ -68,9 +69,9 @@ class WeatherTopViewModel @Inject constructor(
         _weatherMutableStateFlow.update { it.copy(showErrorDialog = false) }
     }
 
-    private fun createWeatherRequestJson(area: String): String {
+    private fun createWeatherRequestJson(): String {
         val date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
-        return Json.encodeToString(WeatherRequest(area = area, date = date))
+        return Json.encodeToString(WeatherRequest(area = "東京", date = date))
     }
 
     private fun decodeWeatherResponse(json: String): WeatherResponse {
